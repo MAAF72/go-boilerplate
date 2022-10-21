@@ -1,0 +1,35 @@
+rule FreeRasPi "Free RasPi when purchasing MacBook Pro" salience 10 {
+    when
+        transaction.IsExistTransactionItemByItemID("bcfc66a1-389f-4a0a-8e95-2825a6298949") 
+        && transaction.IsExistTransactionItemByItemID("d969551f-ee12-4f56-a69f-97d3515a1906")
+    then
+        temp["rasPiIdx"] = transaction.IndexTransactionItemByItemID("d969551f-ee12-4f56-a69f-97d3515a1906");
+        transaction.Items[temp["rasPiIdx"]].Discount = transaction.Items[temp["rasPiIdx"]].Discount + transaction.Items[temp["rasPiIdx"]].Price;
+        transaction.Items[temp["rasPiIdx"]].DiscountReason = "Free RasPi when purchasing MacBook Pro";
+        Log("FreeRasPi");
+        Retract("FreeRasPi");
+}
+
+rule GoogleHomeBuy2Get3 "Free 1 Google Home when buying 2 Google Homes" salience 8 {
+    when
+        transaction.IsExistTransactionItemByItemID("f1feaed1-3c28-46fc-af4b-6adba7deab6a") 
+        && transaction.GetTransactionItemByItemID("f1feaed1-3c28-46fc-af4b-6adba7deab6a").Quantity >= 3
+    then
+        temp["googleHomeIdx"] = transaction.IndexTransactionItemByItemID("f1feaed1-3c28-46fc-af4b-6adba7deab6a");
+        transaction.Items[temp["googleHomeIdx"]].Discount = transaction.Items[temp["googleHomeIdx"]].Discount + transaction.Items[temp["googleHomeIdx"]].Price;
+        transaction.Items[temp["googleHomeIdx"]].DiscountReason = "Free 1 Google Home when buying 2 Google Homes";
+        Log("GoogleHomeBuy2Get3");
+        Retract("GoogleHomeBuy2Get3");
+}
+
+rule AlexaDiscount10Percent "10 percent discount when buying 3 or more Alexa speakers" salience 7 {
+    when
+        transaction.IsExistTransactionItemByItemID("9b45185a-252d-489f-bcd1-86fe6c1c4ab1") 
+        && transaction.GetTransactionItemByItemID("9b45185a-252d-489f-bcd1-86fe6c1c4ab1").Quantity >= 3
+    then
+        temp["alexaIdx"] = transaction.IndexTransactionItemByItemID("9b45185a-252d-489f-bcd1-86fe6c1c4ab1");
+        transaction.Items[temp["alexaIdx"]].Discount = transaction.Items[temp["alexaIdx"]].Discount + (transaction.Items[temp["alexaIdx"]].Price * transaction.Items[temp["alexaIdx"]].Quantity * 0.1);
+        transaction.Items[temp["alexaIdx"]].DiscountReason = "10 percent discount when buying 3 or more Alexa speakers";
+        Log("AlexaDiscount10Percent");
+        Retract("AlexaDiscount10Percent");
+}
